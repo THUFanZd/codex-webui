@@ -65,6 +65,7 @@ export function extractUserMessageAttachments(text: string): UserMessageAttachme
 }
 
 export function formatUserMessageForDisplay(text: string): string {
+  text = text.replace(/^\[codex-webui branch\]\n[\s\S]*?\n\[\/codex-webui branch\]\n\n/, "");
   const trimmed = text.trimStart();
   if (trimmed.startsWith("# Files mentioned by the user:")) {
     return extractExplicitRequest(text);

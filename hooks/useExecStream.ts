@@ -19,6 +19,8 @@ import {
 } from "./stream-controller";
 import { fetchUsageSnapshot } from "./useUsageRefresh";
 
+import { formatUserMessageForDisplay } from "@/lib/codex/user-message";
+
 let pendingUserMessageCounter = 0;
 
 function pendingUserMessageId(): string {
@@ -41,7 +43,7 @@ export function useExecStream() {
       // app-server 的实时通知不保证回传用户输入；先本地显示，避免在启动期间遗漏本轮消息。
       dispatch({
         type: "ADD_PENDING_USER_MESSAGE",
-        item: { id: pendingUserMessageId(), type: "user_message", text: req.prompt },
+        item: { id: pendingUserMessageId(), type: "user_message", text: formatUserMessageForDisplay(req.prompt) },
         timestamp: new Date().toISOString(),
       });
 
@@ -74,7 +76,9 @@ export function useExecStream() {
                 dispatch({ type: "SET_RESUME", sessionId: event.thread_id });
               }
             }
-            dispatchEvent(event);
+            if (event.type === "item.completed" && event.item.type === "user_message") {
+              dispatchEvent({ ...event, item: { ...event.item, text: formatUserMessageForDisplay(event.item.text) } });
+            } else dispatchEvent(event);
           },
           controller.signal,
         );

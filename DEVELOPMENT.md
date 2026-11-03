@@ -203,6 +203,18 @@ Theme and interface language both default to following the operating system when
 
 For rich hover details, use one tooltip implementation per trigger. Do not combine a native `title` attribute with a custom `role="tooltip"` surface: browsers will display both. The context-usage trigger is keyboard-focusable and exposes only the custom tooltip through `aria-describedby`.
 
+## Conversation organization
+
+The event stream remains chronological. lib/session/conversation-layout.ts projects whole question/answer turns and assigns question-order keys so live pending IDs and historical IDs can differ. Tree/fold regions refer to those keys; they never rewrite rollout files. Range regrouping validates contiguity, removes overlapping membership and reparents surviving branches.
+
+stores/conversation-layout.tsx owns per-session layout, pending questions and expansion state under codex-webui-layout-v1:<session>. A new conversation migrates its draft layout when the real thread ID arrives. Showcase uses a separate key namespace. Storage failure keeps in-memory use available. Grouping state is local to the browser and is not a context-isolation mechanism.
+
+Composer records editable tree questions even during execution, and sends them serially. A branch follow-up includes a bounded textual parent reference; formatUserMessageForDisplay hides only that wrapper in pending messages, server echoes and replay. EventTimeline virtualizes normal turns and regions, reusing the existing message, process, structured-question and Diff cards. Folded regions and collapsed branches keep error and user-input cards reachable.
+
+MessageRangeEditor uses a modal dialog with inclusive start/end selection of complete turns; the editor is disabled while execution or replay is running. Reorganization can be undone with Restore normal display. No automatic topic classification is included.
+
+Run npm test for turn projection, contiguity, reversible grouping, overlapping groups, nested relationships, session storage and branch prompt formatting. Browser validation can use /showcase without invoking Codex. Set NEXT_DIST_DIR to an ignored directory such as .tmp/next-organization when testing alongside an existing production instance, so generated assets remain separate.
+
 ## CLI compatibility and history I/O
 
 - Both live app-server file changes and persisted FileChange maps use lib/codex/file-change.ts. It accepts structured or legacy string kinds, preserves update diffs and move paths, and turns add/delete file content into unified diffs.

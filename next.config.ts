@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  distDir: process.env.NEXT_DIST_DIR ?? ".next",
   // API routes use child_process / fs and force `export const runtime = 'nodejs'`.
   // Keep build lenient for local single-user tool.
   eslint: {

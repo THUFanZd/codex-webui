@@ -16,6 +16,7 @@
  */
 
 import { useState, useCallback } from "react";
+import { ConversationLayoutProvider } from "@/stores/conversation-layout";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { SessionView } from "@/components/session/SessionView";
@@ -28,6 +29,10 @@ import type { FileChangeItem } from "@/types/api";
 import { useActiveSession } from "@/stores/active-session";
 
 export function AppShell() {
+  return <ConversationLayoutProvider><AppShellContent /></ConversationLayoutProvider>;
+}
+
+function AppShellContent() {
   const { state } = useActiveSession();
   const [diffTarget, setDiffTarget] = useState<FileChangeItem | null>(null);
 

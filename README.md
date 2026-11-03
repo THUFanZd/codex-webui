@@ -60,6 +60,14 @@ It runs entirely locally. No server to deploy, no auth, no remote access — the
 | **Light / dark theme** | Follows the system by default, with a persistent manual light/dark/system toggle. |
 | **Interface language** | Follows the system by default, with Simplified Chinese and English overrides. The compact language menu applies immediately, persists in `localStorage`, and updates the document language. |
 
+## Organize a conversation
+
+- Choose **Normal**, **Tree**, or **Folded** above the input. The mode applies to upcoming turns until you switch back to Normal.
+- In Tree mode, type a question and press Enter or **Record question**. Record several questions first, edit drafts as needed, then use **Send question** one at a time. Use **Add sibling questions** under an answer or region, or **Follow up here** on a branch to nest a follow-up.
+- Folded mode collects full prompts, execution events and final replies into one collapsed record. Expand its header to read it; **Continue this record** appends more turns.
+- Click **Organize messages** above the timeline to select a start and end turn. All complete turns in between are included. Give the region an optional title and arrange it as a tree or fold it. **Restore normal display** reverses the organization without removing messages.
+- Layout, collapse state and unsent questions are saved per session in this browser. They do not sync between browsers. Switching display modes does not fork the underlying Codex conversation; branch follow-ups include a compact reference to the intended answer.
+
 ## CLI compatibility
 
 Current CLI structured completion events preserve command output, exit codes, and file changes during replay, while older command logs remain supported. Added/deleted file content is converted to unified diffs with accurate change types and line counts. History lists read recent sessions on demand and cache unchanged metadata/previews; compressed preview reads close their input streams before decoding the rest of the archive.
