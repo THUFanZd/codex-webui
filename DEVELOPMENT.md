@@ -306,7 +306,7 @@ Project source is released under the [MIT License](./LICENSE). The `private: tru
 
 ## Companion / 网页桌宠
 
-`components/companion/WebCompanion.tsx` is a client overlay mounted once beneath the active-session and language providers. It uses a CSS module, original SVG artwork, pointer capture with drag-click suppression, keyboard placement, and a persistent hide/restore control. It subscribes only to existing React session state and a local user-input resolution event; it adds no API calls or polling.
+`components/companion/WebCompanion.tsx` is a client overlay mounted once by `AppShell` beneath the active-session and language providers, including in the isolated showcase. It uses a CSS module, original SVG artwork, pointer capture with drag-click suppression, keyboard placement, and a persistent hide/restore control. It subscribes only to existing React session state and a local user-input resolution event; it adds no API calls or polling.
 
 `lib/companion/state.ts` derives idle/running/attention and validates observed live completion transitions. Replay stays idle, current-turn questions are matched by interaction ID, warnings are ignored, and resumed model/tool output clears earlier attention. After a successful response, `UserInputRequestCard` dispatches `INTERACTION_RESOLVED_EVENT` with `{ interactionId: item.interactionId }` in a CustomEvent detail. This bridges submitted state without modifying the session reducer. Completion animation expires after 2.1 seconds.
 

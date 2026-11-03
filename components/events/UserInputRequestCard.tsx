@@ -5,6 +5,7 @@ import { Check, Loader2, MessageCircleQuestion } from "lucide-react";
 import type { UserInputRequestItem } from "@/types/api";
 import { cn } from "@/lib/utils/cn";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { INTERACTION_RESOLVED_EVENT } from "@/lib/companion/state";
 
 export function UserInputRequestCard({ item }: { item: UserInputRequestItem }) {
   const { t } = useLanguage();
@@ -56,6 +57,9 @@ export function UserInputRequestCard({ item }: { item: UserInputRequestItem }) {
         throw new Error(body?.error ?? `HTTP ${response.status}`);
       }
       setSubmitted(true);
+      window.dispatchEvent(new CustomEvent(INTERACTION_RESOLVED_EVENT, {
+        detail: { interactionId: item.interactionId },
+      }));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
     } finally {

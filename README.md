@@ -205,3 +205,5 @@ The small companion follows the active task: it rests while idle, works during a
 Drag it to move, or focus it and use the arrow keys (Shift moves farther). Home, Escape, or the home button restores its default position. The close button hides it; **Show companion** brings it back. Position and visibility are remembered locally and kept inside the viewport when the window changes size. Reduced motion is respected.
 
 The image button imports a local PNG/WebP sprite sheet: 1536 × 1872 (v1) or 1536 × 2288 (v2), up to 20 MiB. The file stays in your browser for this visit and is never uploaded. Click the paw button to return to the original artwork. This is an independent web companion; desktop pet settings are unchanged. See [pet research and format details](./docs/pet-research.md).
+
+The companion is available in both the main interface and the isolated `/showcase` demo.

@@ -34,7 +34,7 @@ Mount `<WebCompanion />` once inside `ActiveSessionProvider` and `LanguageProvid
 
 State is derived from the existing active session. Historical replay stays idle. A completion gesture requires an observed live running-to-completed transition for the same session and turn. Switching to completed history does not meet that condition. Attention looks at the current running turn, ignores warnings, and clears when execution resumes. Previously completed or failed turns are ignored when a new run starts.
 
-A successful user-input response should dispatch:
+The response card dispatches this event after a successful user-input response:
 
 ```ts
 import { INTERACTION_RESOLVED_EVENT } from "@/lib/companion/state";

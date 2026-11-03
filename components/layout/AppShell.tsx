@@ -25,6 +25,7 @@ import { Composer } from "@/components/session/Composer";
 import { ConfigPanel } from "@/components/config/ConfigPanel";
 import { DiffViewerDialog } from "@/components/diff/DiffViewerDialog";
 import { Toaster } from "@/components/ui/Toaster";
+import { WebCompanion } from "@/components/companion/WebCompanion";
 import type { FileChangeItem } from "@/types/api";
 import { useActiveSession } from "@/stores/active-session";
 
@@ -69,6 +70,7 @@ function AppShellContent() {
 
       {/* 全局通知（右下角 toast） */}
       <Toaster />
+      <WebCompanion />
     </div>
   );
 }
