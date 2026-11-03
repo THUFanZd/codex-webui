@@ -88,7 +88,7 @@ export function TopBar() {
   };
 
   return (
-    <header className="flex h-10 shrink-0 items-center justify-between gap-2 border-b border-[hsl(var(--overlay)/0.05)] bg-[hsl(var(--surface))] px-2 sm:px-4">
+    <header className="workspace-topbar flex shrink-0 items-center justify-between gap-2 border-b border-[hsl(var(--border-subtle))] bg-[hsl(var(--surface))] pl-14 pr-2 sm:pr-4 md:pl-4">
       {/* 左：会话标识 */}
       <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden lg:gap-3">
         <div className="flex shrink-0 items-center gap-1.5">
@@ -101,7 +101,7 @@ export function TopBar() {
           ) : (
             <Circle className="h-2 w-2 fill-[hsl(var(--muted))] text-[hsl(var(--muted))]" />
           )}
-          <span className={`font-mono text-xs ${statusColor}`}>{statusLabel}</span>
+          <span className={`text-xs font-medium ${statusColor}`}>{statusLabel}</span>
         </div>
 
         {prefs?.cwd && (
@@ -126,7 +126,7 @@ export function TopBar() {
         )}
 
         {state.isReplay && (
-          <span className="hidden rounded-md bg-[hsl(var(--accent)/0.15)] px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[hsl(var(--accent))] lg:inline">
+          <span className="hidden rounded-md bg-[hsl(var(--accent)/0.15)] px-1.5 py-0.5 text-[10px] text-[hsl(var(--accent))] lg:inline">
             replay
           </span>
         )}
@@ -148,7 +148,7 @@ export function TopBar() {
             ].filter(Boolean).join("\n")}
           >
             {rl?.planType && (
-              <span className="rounded-md bg-[hsl(var(--info)/0.12)] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-[hsl(var(--info))]">
+              <span className="rounded-md bg-[hsl(var(--info)/0.12)] px-1.5 py-0.5 text-[10px] text-[hsl(var(--info))]">
                 {rl.planType}
               </span>
             )}
@@ -187,7 +187,7 @@ export function TopBar() {
         {/* 上下文窗口进度条 */}
         {contextWindow > 0 && (
           <div
-            className="group relative flex shrink-0 items-center gap-1.5"
+            className="group relative flex shrink-0 items-center gap-1.5 rounded-sm focus-ring"
             tabIndex={0}
             aria-describedby="context-usage-tooltip"
           >

@@ -136,7 +136,7 @@ test("collapsed response previews reserve their flex width for ellipsis", () => 
     "utf8",
   );
   assert.match(source, /flex min-w-0 flex-1 items-center gap-2/);
-  assert.match(source, /min-w-0 flex-1 truncate text-xs italic/);
+  assert.match(source, /min-w-0 flex-1 truncate text-xs/);
 });
 
 test("file wrapper becomes a compact request plus attachment metadata", () => {

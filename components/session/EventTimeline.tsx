@@ -49,8 +49,8 @@ export function EventTimeline({ onOpenDiff }: { onOpenDiff: (item: FileChangeIte
     window.setTimeout(() => document.getElementById("conversation-" + turn.id)?.scrollIntoView({ block: "nearest" }), 100);
     setActiveAnchor(anchors.findIndex((anchor) => anchor.index === index));
   };
-  return <div className="relative flex h-full flex-col">
-    <div className="flex shrink-0 items-center justify-end border-b border-[hsl(var(--overlay)/0.06)] px-4 py-1.5">
+  return <div className="relative flex h-full flex-col bg-background">
+    <div className="flex shrink-0 items-center justify-end border-b border-[hsl(var(--border-subtle))] bg-[hsl(var(--surface))] px-4 py-1.5">
       <button disabled={!layout.turns.length || state.status === "running" || !layout.ready}
         onClick={() => setEditing(true)} className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--overlay)/0.05)] disabled:opacity-35 focus-ring">
         <ListChecks className="h-3.5 w-3.5" />{t("org.edit")}
@@ -60,11 +60,11 @@ export function EventTimeline({ onOpenDiff }: { onOpenDiff: (item: FileChangeIte
       const el = scroll.current;
       if (el) following.current = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
     }} className="min-h-0 flex-1 overflow-y-auto" style={{ overscrollBehavior: "contain" }}>
-      <div className="relative mx-auto max-w-4xl" style={{ height: virtualizer.getTotalSize() }}>
+      <div className="conversation-width relative mx-auto" style={{ height: virtualizer.getTotalSize() }}>
         {virtualizer.getVirtualItems().map((row) => {
           const unit = units[row.index];
           return <div key={row.key} data-index={row.index} ref={virtualizer.measureElement}
-            className="absolute left-0 top-0 w-full px-5 py-2" style={{ transform: "translateY(" + row.start + "px)" }}>
+            className="conversation-row absolute left-0 top-0 w-full px-3 py-3 sm:px-6" style={{ transform: "translateY(" + row.start + "px)" }}>
             {unit.kind === "region" ? <ConversationRegion region={unit.region} onOpenDiff={onOpenDiff} /> :
               <div id={"conversation-" + unit.turn.id}>
                 <ConversationTurnCard turn={unit.turn} onOpenDiff={onOpenDiff} />

@@ -303,3 +303,13 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS · SWR · @tan
 ## License and project identity
 
 Project source is released under the [MIT License](./LICENSE). The `private: true` package flag intentionally prevents accidental npm publication and does not change the source license. Third-party dependencies retain their own licenses, and bundled third-party material is recorded in [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md). This is an independent community project; OpenAI and Codex names and marks belong to OpenAI and must not be used to imply affiliation or endorsement.
+
+## Workspace appearance / 工作区外观
+
+The visual layer keeps the existing conversation layout document, session reducer and execution paths. `app/globals.css` defines blue-grey light/dark tokens, the periwinkle discussion accent, reading rhythm, responsive chrome and branch connectors. The workspace uses background/surface separation; rectangles follow their role rather than one universal radius. The composer uses a quiet border and a subtle focus ring instead of a focus shadow. Microsoft YaHei remains first in the Chinese system font stack; code and paths retain monospace.
+
+`ConversationRegion` adds structural rails, nested branch markers and a one-line collapsed header. Its follow-up controls call the same layout actions. `ConversationTurnCard` adds a reading container; virtualized row transforms remain owned by `EventTimeline`, and row height changes continue to use its existing `measureElement`/ResizeObserver path. New disclosure animation changes opacity only, and send feedback changes only the local button transform. The old unconditional timeline entrance animation is disabled; a reduced-motion media query covers existing and new controls.
+
+`Sidebar` owns its narrow-screen drawer and Escape handling without changing provider lifetimes or `AppShell`. `ConfigPanel` owns a local disclosure state: cwd stays available in the compact summary, while all existing controls remain in the expanded panel. Narrow screens use a two-column configuration grid; no overflow container clips the upward-opening Select menus. Composer mode help, the explicit Tree placeholder, editable draft queue, mobile sidebar controls and configuration labels share the existing English/Chinese dictionaries.
+
+The existing response-preview regression check still verifies `min-w-0`, flexible width and ellipsis; it no longer requires italic typography. No new presentation-only unit tests are added. Validate with the existing Node tests, TypeScript, changed-file ESLint, and the isolated showcase in both themes and at narrow width. Keep `NEXT_DIST_DIR` build paths out of committed `tsconfig.json`.

@@ -22,27 +22,27 @@ export function MessageRangeEditor({ onClose }: { onClose: () => void }) {
   };
   return <dialog ref={dialog} onCancel={(event) => { event.preventDefault(); onClose(); }}
     aria-labelledby="organization-editor-title"
-    className="m-auto w-[min(760px,calc(100vw-32px))] max-h-[85vh] rounded-xl border border-[hsl(var(--overlay)/0.15)] bg-background p-0 text-foreground shadow-xl backdrop:bg-black/45">
+    className="m-auto w-[min(760px,calc(100vw-32px))] max-h-[85vh] rounded-xl border border-[hsl(var(--overlay)/0.15)] bg-[hsl(var(--surface))] p-0 text-foreground shadow-xl backdrop:bg-[hsl(var(--overlay)/0.3)]">
     <div className="flex max-h-[85vh] flex-col">
       <header className="flex items-start justify-between gap-4 border-b border-[hsl(var(--overlay)/0.1)] px-5 py-4">
         <div><h2 id="organization-editor-title" className="font-semibold">{t("org.editTitle")}</h2>
           <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">{t("org.editHelp")}</p></div>
         <button type="button" onClick={onClose} aria-label={t("org.close")} className="rounded-md p-1 focus-ring"><X className="h-4 w-4" /></button>
       </header>
-      <div className="min-h-0 flex-1 overflow-y-auto p-3">
+      <div className="min-h-0 flex-1 overflow-y-auto bg-background p-3">
         {turns.map((turn, index) => {
           const selected = index >= first && index <= last && first >= 0;
           const answer = [...turn.items].reverse().find((item) => item.type === "agent_message");
-          return <label key={turn.id} className={"mb-1 flex cursor-pointer items-start gap-3 rounded-lg border p-3 " +
-            (selected ? "border-[hsl(var(--primary)/0.4)] bg-[hsl(var(--primary)/0.06)]" : "border-transparent hover:bg-[hsl(var(--overlay)/0.04)]")}>
+          return <label key={turn.id} className={"range-row mb-1.5 flex cursor-pointer items-start gap-3 rounded-lg border p-3 " +
+            (selected ? "border-[hsl(var(--primary)/0.4)] bg-[hsl(var(--primary)/0.06)]" : "border-[hsl(var(--border-subtle))] bg-[hsl(var(--surface))] hover:border-[hsl(var(--primary)/0.2)]")}>
             <input type="checkbox" checked={selected} aria-label={t("org.selectTurn") + " " + (index + 1)}
-              className="mt-1 accent-[hsl(var(--primary))]"
+              className="mt-1 h-4 w-4 shrink-0 accent-[hsl(var(--primary))]"
               onChange={() => { if (anchor === index && (end === null || end === index)) { setAnchor(null); setEnd(null); }
                 else if (anchor === null) setAnchor(index); else setEnd(index); }} />
             <div className="min-w-0 flex-1">
-              <span className="text-xs text-[hsl(var(--muted-foreground))]">{index + 1}</span>
-              <p className="line-clamp-2 text-sm font-medium">{turn.prompt?.text ?? t("org.root")}</p>
-              {answer?.type === "agent_message" && <p className="mt-1 line-clamp-2 text-xs text-[hsl(var(--muted-foreground))]">{answer.text}</p>}
+              <span className="mb-1 inline-block text-xs tabular-nums text-[hsl(var(--muted-foreground))]">{index + 1}</span>
+              <p className="line-clamp-2 text-sm font-medium leading-relaxed">{turn.prompt?.text ?? t("org.root")}</p>
+              {answer?.type === "agent_message" && <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[hsl(var(--muted-foreground))]">{answer.text}</p>}
             </div>
           </label>;
         })}

@@ -193,7 +193,7 @@ export function ResponseBlockCard({
         {hasProcess && (
           <div className="my-1 rounded-lg border border-[hsl(var(--overlay)/0.08)] bg-[hsl(var(--surface-2))]">
             {/* 折叠头部 */}
-            <div className="flex items-center gap-1 px-3 py-2 rounded-lg">
+            <div className="flex min-w-0 items-center gap-1 rounded-lg px-2.5 py-1.5">
               {canToggle ? (
                 <button
                   onClick={handleToggle}
@@ -222,12 +222,12 @@ export function ResponseBlockCard({
                   {!isExpanded && (
                     <>
                       {previewText && (
-                        <span className="min-w-0 flex-1 truncate text-xs italic text-[hsl(var(--muted-foreground))]/60">
+                        <span className="min-w-0 flex-1 truncate text-xs text-[hsl(var(--muted-foreground))]/80">
                           {previewText}
                         </span>
                       )}
                       {actionSummary && (
-                        <span className="shrink-0 text-[10px] text-[hsl(var(--muted-foreground))]/50">
+                        <span className="hidden shrink-0 text-[10px] text-[hsl(var(--muted-foreground))]/70 sm:inline">
                           {actionSummary}
                         </span>
                       )}
@@ -255,12 +255,12 @@ export function ResponseBlockCard({
                     </span>
                   )}
                   {previewText && (
-                    <span className="min-w-0 flex-1 truncate text-xs italic text-[hsl(var(--muted-foreground))]/60">
+                    <span className="min-w-0 flex-1 truncate text-xs text-[hsl(var(--muted-foreground))]/80">
                       {previewText}
                     </span>
                   )}
                   {actionSummary && (
-                    <span className="shrink-0 text-[10px] text-[hsl(var(--muted-foreground))]/50">
+                    <span className="hidden shrink-0 text-[10px] text-[hsl(var(--muted-foreground))]/70 sm:inline">
                       {actionSummary}
                     </span>
                   )}
@@ -269,7 +269,7 @@ export function ResponseBlockCard({
 
               {/* 右侧弱化 token 用量（completed turn） */}
               {isCompletedTurn && turnMeta?.usage && (
-                <span className="flex shrink-0 items-center gap-1.5 font-mono text-[10px] text-[hsl(var(--muted-foreground))]/50">
+                <span className="hidden shrink-0 items-center gap-1.5 font-mono text-[10px] text-[hsl(var(--muted-foreground))]/70 lg:flex">
                   <span title="input">↑{formatTokens(turnMeta.usage.input_tokens)}</span>
                   <span title="output">↓{formatTokens(turnMeta.usage.output_tokens)}</span>
                   {turnMeta.usage.cached_input_tokens > 0 && (

@@ -21,7 +21,7 @@ import { useExecStream } from "@/hooks/useExecStream";
 import { useConfig } from "@/hooks/useConfig";
 import { useSkills } from "@/hooks/useSkills";
 import { useActiveSession } from "@/stores/active-session";
-import { ArrowUp, Square, CornerDownLeft, History, Sparkles, Plus, X, GitBranch, ChevronDown } from "lucide-react";
+import { ArrowUp, Square, CornerDownLeft, History, Sparkles, Plus, X, GitBranch, FoldVertical, MessageSquare } from "lucide-react";
 import { SlashCommandMenu } from "./SlashCommandMenu";
 import { SkillMenu } from "./SkillMenu";
 import {
@@ -285,22 +285,22 @@ export function Composer() {
     };
 
   return (
-    <div className="border-t border-[hsl(var(--overlay)/0.05)] bg-[hsl(var(--surface))] px-4 py-[6px]">
-      <div className="mx-auto max-w-4xl">
+    <div className="composer-shell shrink-0 border-t border-[hsl(var(--border-subtle))] bg-[hsl(var(--surface))] px-3 pb-3 pt-3 sm:px-5">
+      <div className="conversation-width mx-auto">
         <div className="mb-2 flex flex-wrap items-center gap-2">
-          <div role="group" aria-label={t("org.modeLabel")} className="inline-flex rounded-lg border border-[hsl(var(--overlay)/0.12)] p-0.5">
+          <div role="group" aria-label={t("org.modeLabel")} className="inline-flex rounded-lg bg-[hsl(var(--surface-2))] p-1">
             {(["normal", "tree", "fold"] as const).map((mode) => (
               <button key={mode} type="button" aria-pressed={layout.doc.mode === mode}
                 disabled={!layout.ready}
                 onClick={() => layout.selectMode(mode)}
-                className={"inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-xs focus-ring " +
-                  (layout.doc.mode === mode ? "bg-[hsl(var(--primary)/0.12)] text-[hsl(var(--primary))]" : "text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--overlay)/0.05)]")}>
-                {mode === "tree" ? <GitBranch className="h-3 w-3" /> : mode === "fold" ? <ChevronDown className="h-3 w-3" /> : null}
+                className={"composer-mode inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium disabled:opacity-40 focus-ring " +
+                  (layout.doc.mode === mode ? "bg-[hsl(var(--surface))] text-[hsl(var(--primary))]" : "text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--overlay)/0.05)]")}>
+                {mode === "tree" ? <GitBranch className="h-3 w-3" /> : mode === "fold" ? <FoldVertical className="h-3 w-3" /> : <MessageSquare className="h-3 w-3" />}
                 {t(("org." + mode) as "org.normal" | "org.tree" | "org.fold")}
               </button>
             ))}
           </div>
-          {layout.doc.mode !== "normal" && <span className="text-xs text-[hsl(var(--muted-foreground))]">
+          {layout.doc.mode !== "normal" && <span className="composer-help text-xs text-[hsl(var(--muted-foreground))]">
             {t(layout.doc.mode === "tree" ? "org.treeHelp" : "org.foldHelp")}
           </span>}
           {layout.doc.replyToId && <button type="button" onClick={() => layout.followUp(layout.doc.activeGroupId!, null)}
@@ -309,14 +309,14 @@ export function Composer() {
             <X className="ml-1 inline h-3 w-3" />
           </button>}
         </div>
-        {layout.doc.drafts.length > 0 && <div className="mb-2 rounded-lg border border-[hsl(var(--primary)/0.18)] bg-[hsl(var(--surface-2))] p-2" aria-label={t("org.drafts")}>
-          <div className="mb-1 text-xs font-medium text-[hsl(var(--muted-foreground))]">{t("org.drafts")} ({layout.doc.drafts.length})</div>
-          <div className="max-h-36 space-y-1 overflow-y-auto">
-            {layout.doc.drafts.map((draft) => <div key={draft.id} className="flex items-center gap-2">
+        {layout.doc.drafts.length > 0 && <div className="mb-3 rounded-lg border border-[hsl(var(--primary)/0.18)] bg-[hsl(var(--primary)/0.025)] p-3" aria-label={t("org.drafts")}>
+          <div className="mb-2 flex items-center gap-2 text-xs font-medium text-[hsl(var(--muted-foreground))]"><GitBranch className="h-3.5 w-3.5 text-[hsl(var(--primary))]" />{t("org.drafts")}<span className="rounded bg-[hsl(var(--primary)/0.09)] px-1.5 text-[hsl(var(--primary))]">{layout.doc.drafts.length}</span></div>
+          <div className="max-h-40 space-y-2 overflow-y-auto">
+            {layout.doc.drafts.map((draft) => <div key={draft.id} className="draft-row flex items-center gap-2 pl-2.5">
               <textarea aria-label={t("org.draftText")} rows={1} value={draft.text} onChange={(event) => layout.editDraft(draft.id, event.target.value)}
-                className="min-w-0 flex-1 resize-y rounded-md border border-[hsl(var(--overlay)/0.08)] bg-background px-2 py-1 text-sm focus-ring" />
+                className="min-w-0 flex-1 resize-y rounded-md border border-[hsl(var(--overlay)/0.08)] bg-[hsl(var(--surface))] px-2.5 py-1.5 text-sm leading-relaxed focus-ring" />
               <button type="button" onClick={() => execute(draft.text.trim(), draft)} disabled={running || disabled || !draft.text.trim()}
-                className="rounded-md bg-[hsl(var(--primary)/0.12)] px-2 py-1 text-xs text-[hsl(var(--primary))] disabled:opacity-40 focus-ring">{t("org.send")}</button>
+                className="rounded-md bg-[hsl(var(--primary)/0.1)] px-2.5 py-1.5 text-xs text-[hsl(var(--primary))] disabled:opacity-40 focus-ring">{t("org.send")}</button>
               <button type="button" aria-label={t("org.removeDraft")} onClick={() => layout.removeDraft(draft.id)}
                 className="rounded-md p-1 text-[hsl(var(--muted-foreground))] focus-ring"><X className="h-3.5 w-3.5" /></button>
             </div>)}
@@ -344,15 +344,16 @@ export function Composer() {
           )}
 
           <div
-            className={`flex items-end gap-2 rounded-xl border bg-[hsl(var(--surface-2))] px-3 py-2 shadow-sm transition-all ${
+            className={`composer-field flex items-end gap-2 rounded-xl border bg-[hsl(var(--surface))] px-3.5 py-3 ${
               disabled
-                ? "border-[hsl(var(--overlay)/0.05)] opacity-50"
-                : "border-[hsl(var(--overlay)/0.1)] focus-within:border-[hsl(var(--primary)/0.4)] focus-within:shadow-md"
+                ? "border-[hsl(var(--border-subtle))] opacity-50"
+                : "border-[hsl(var(--border))] focus-within:border-[hsl(var(--primary)/0.6)]"
             }`}
           >
             <textarea
               ref={textareaRef}
               data-main-composer
+              aria-label={t("composer.ask")}
               value={value}
               onChange={(e) => setValue(e.target.value)}
               onKeyDown={onKeyDown}
@@ -361,11 +362,13 @@ export function Composer() {
               placeholder={
                 disabled
                   ? t("composer.setCwd")
-                  : resumeId
+                  : layout.doc.mode === "tree"
+                    ? t("org.treePlaceholder")
+                    : resumeId
                     ? t("composer.continue")
                     : t("composer.ask")
               }
-              className="flex-1 resize-none bg-transparent text-base text-foreground placeholder:text-[hsl(var(--muted-foreground))] outline-none disabled:cursor-not-allowed"
+              className="min-w-0 flex-1 resize-none bg-transparent text-base leading-7 text-foreground placeholder:text-[hsl(var(--muted-foreground))] outline-none disabled:cursor-not-allowed"
               style={{ minHeight: "28px", maxHeight: "200px" }}
             />
 
@@ -382,7 +385,7 @@ export function Composer() {
               <button
                 onClick={send}
                 disabled={!value.trim() || disabled || !layout.ready}
-                className={"inline-flex shrink-0 items-center justify-center rounded-md border border-[hsl(var(--primary)/0.4)] bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.2)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed focus-ring " + (layout.doc.mode === "tree" ? "h-8 gap-1 px-2 text-xs" : "h-7 w-7")}
+                className={"composer-submit inline-flex shrink-0 items-center justify-center rounded-lg bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary)/0.88)] disabled:opacity-30 disabled:cursor-not-allowed focus-ring " + (layout.doc.mode === "tree" ? "h-8 gap-1 px-2.5 text-xs font-medium" : "h-8 w-8")}
                 title={layout.doc.mode === "tree" ? t("org.add") : "Send (Enter)"}
                 aria-label={layout.doc.mode === "tree" ? t("org.add") : "Send (Enter)"}
               >
@@ -393,7 +396,7 @@ export function Composer() {
         </div>
 
         <div className="mt-2 flex flex-wrap items-center justify-between gap-2 px-0.5">
-          <span className="inline-flex h-6 items-center gap-1.5 rounded-full bg-[hsl(var(--overlay)/0.05)] px-2 font-mono text-[10px] text-[hsl(var(--muted-foreground))]">
+          <span className="inline-flex h-6 items-center gap-1.5 text-[11px] text-[hsl(var(--muted-foreground))]">
             {resumeId ? (
               <>
                 <History className="h-3 w-3 text-[hsl(var(--primary))]" />
@@ -407,7 +410,7 @@ export function Composer() {
               </>
             )}
           </span>
-          <span className="flex flex-wrap items-center justify-end gap-x-3 gap-y-1 text-[10px] text-[hsl(var(--muted-foreground))]">
+          <span className="composer-shortcuts hidden flex-wrap items-center justify-end gap-x-3 gap-y-1 text-[10px] text-[hsl(var(--muted-foreground))] md:flex">
             <span className="inline-flex items-center gap-1">
               <kbd className="rounded border border-[hsl(var(--overlay)/0.1)] bg-[hsl(var(--surface-2))] px-1.5 py-0.5 font-mono text-[9px] text-foreground/70">Enter</kbd>
               {layout.doc.mode === "tree" ? t("org.add") : t("composer.send")}
