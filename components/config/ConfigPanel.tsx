@@ -3,21 +3,22 @@
 /**
  * ConfigPanel — 配置面板（cwd/model/effort/sandbox/approval）。
  *
- * 紧凑工具栏展示在发送框下方，偏好持久化到 localStorage（通过 useConfig）。
- * 每个控件使用一致的标签层级和弹性基宽，窄屏时按字段自然换行。
+ * 发送框下方常驻目录和配置展开入口，其余字段默认收起。
+ * 展开后字段按窄屏双列排列；偏好仍通过 useConfig 持久化。
  */
 
 import { useState } from "react";
 import { useConfig } from "@/hooks/useConfig";
 import { DirectoryPicker } from "@/components/fs/DirectoryPicker";
 import { Select } from "@/components/ui/Select";
-import { FolderOpen } from "lucide-react";
+import { FolderOpen, ChevronDown, SlidersHorizontal } from "lucide-react";
 import type { SandboxMode, ApprovalPolicy } from "@/types/api";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 export function ConfigPanel() {
   const { config, prefs, updatePrefs } = useConfig();
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const { t } = useLanguage();
 
   if (!config || !prefs) {
@@ -30,31 +31,28 @@ export function ConfigPanel() {
 
   return (
     <div
-      className="flex flex-wrap items-end gap-2 px-4 py-2.5 text-xs"
+      className="px-3 py-2 text-xs sm:px-4"
       data-config-panel="true"
       aria-label={t("config.label")}
     >
-      {/* cwd — 优先占据剩余空间 */}
-      <div className="min-w-[220px] flex-[1.6_1_280px]">
-        <span className="mb-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-[hsl(var(--muted-foreground))]/75">
-          cwd
-        </span>
-        <button
-          onClick={() => setPickerOpen(true)}
-          className="flex h-8 w-full min-w-0 items-center gap-1.5 rounded-lg border border-[hsl(var(--overlay)/0.1)] bg-[hsl(var(--surface-2))] px-2.5 text-left transition-colors hover:border-[hsl(var(--primary)/0.25)] hover:bg-[hsl(var(--overlay)/0.05)] focus-ring"
-          title={prefs.cwd || "not set"}
-        >
-          <FolderOpen className="h-3 w-3 shrink-0 text-[hsl(var(--muted-foreground))]" />
-          <span className="truncate font-mono text-[11px] text-foreground/80">
-            {prefs.cwd || "not set"}
-          </span>
+      <div className="flex min-w-0 items-center gap-2">
+        <button onClick={() => setPickerOpen(true)} aria-label={t("config.cwd")}
+          className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded-md px-2 text-left text-[hsl(var(--muted-foreground))] transition-colors hover:bg-[hsl(var(--surface-2))] hover:text-foreground focus-ring"
+          title={prefs.cwd || t("composer.setCwd")}>
+          <FolderOpen className="h-3.5 w-3.5 shrink-0" />
+          <span className="truncate font-mono text-[11px]">{prefs.cwd || t("composer.setCwd")}</span>
+        </button>
+        <span className="hidden max-w-36 truncate text-[11px] text-[hsl(var(--muted-foreground))] sm:inline" title={prefs.model}>{prefs.model}</span>
+        <button type="button" onClick={() => setExpanded((current) => !current)} aria-expanded={expanded} aria-controls="session-config-fields"
+          className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2 text-[11px] text-[hsl(var(--muted-foreground))] transition-colors hover:bg-[hsl(var(--surface-2))] hover:text-foreground focus-ring">
+          <SlidersHorizontal className="h-3.5 w-3.5" />{t("config.settings")}<ChevronDown className={"region-disclosure h-3 w-3 " + (expanded ? "rotate-180" : "")} />
         </button>
       </div>
-
+      {expanded && <div id="session-config-fields" className="config-fields region-body mt-2 grid grid-cols-2 items-end gap-2 border-t border-[hsl(var(--border-subtle))] pb-1 pt-3 sm:flex sm:flex-wrap">
       {/* model */}
       <div className="min-w-[150px] flex-[1_1_170px]">
-        <span className="mb-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-[hsl(var(--muted-foreground))]/75">
-          model
+        <span className="mb-1 block text-[10px] text-[hsl(var(--muted-foreground))]">
+          {t("config.model")}
         </span>
         <div title={prefs.model ?? ""}>
           <Select
@@ -83,8 +81,8 @@ export function ConfigPanel() {
 
       {/* effort */}
       <div className="w-28 shrink-0">
-        <span className="mb-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-[hsl(var(--muted-foreground))]/75">
-          effort
+        <span className="mb-1 block text-[10px] text-[hsl(var(--muted-foreground))]">
+          {t("config.effort")}
         </span>
         <div>
           <Select
@@ -109,8 +107,8 @@ export function ConfigPanel() {
 
       {/* collaboration mode */}
       <div className="w-28 shrink-0">
-        <span className="mb-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-[hsl(var(--muted-foreground))]/75">
-          mode
+        <span className="mb-1 block text-[10px] text-[hsl(var(--muted-foreground))]">
+          {t("config.mode")}
         </span>
         <Select
           value={prefs.collaborationMode ?? "default"}
@@ -127,8 +125,8 @@ export function ConfigPanel() {
 
       {/* sandbox */}
       <div className="min-w-[140px] flex-[0.9_1_160px]">
-        <span className="mb-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-[hsl(var(--muted-foreground))]/75">
-          sandbox
+        <span className="mb-1 block text-[10px] text-[hsl(var(--muted-foreground))]">
+          {t("config.sandbox")}
         </span>
         <div>
           <Select
@@ -144,8 +142,8 @@ export function ConfigPanel() {
 
       {/* approval */}
       <div className="min-w-[130px] flex-[0.8_1_145px]">
-        <span className="mb-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-[hsl(var(--muted-foreground))]/75">
-          approval
+        <span className="mb-1 block text-[10px] text-[hsl(var(--muted-foreground))]">
+          {t("config.approval")}
         </span>
         <div>
           <Select
@@ -161,6 +159,7 @@ export function ConfigPanel() {
         </div>
       </div>
 
+      </div>}
       {pickerOpen && (
         <DirectoryPicker
           current={prefs.cwd}

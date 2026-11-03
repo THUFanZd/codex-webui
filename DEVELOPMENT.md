@@ -315,3 +315,15 @@ Project source is released under the [MIT License](./LICENSE). The `private: tru
 Run `node --test tests/companion.test.cjs` for the pure state, storage, sprite-dimension, and placement regressions. See [docs/pet-research.md](./docs/pet-research.md) for verified desktop sources, local format references, evidence boundaries, and the integration event contract.
 
 网页桌宠独立管理样式、拖动、键盘位置、隐藏恢复与本地精灵图；状态直接来自现有会话 Context。已回答问题通过本地事件按 interactionId 清除等待状态；回放历史保持空闲，实时完成只庆祝一次。仅持久化位置与显示状态，不读取或修改桌面宠物配置，也不增加网络轮询。
+
+## Workspace appearance / 工作区外观
+
+The visual layer keeps the existing conversation layout document, session reducer and execution paths. `app/globals.css` defines blue-grey light/dark tokens, the periwinkle discussion accent, reading rhythm, responsive chrome and branch connectors. The workspace uses background/surface separation; rectangles follow their role rather than one universal radius. The composer uses a quiet border and a subtle focus ring instead of a focus shadow. Microsoft YaHei remains first in the Chinese system font stack; code and paths retain monospace.
+
+`ConversationRegion` adds structural rails, nested branch markers and a one-line collapsed header. Its follow-up controls call the same layout actions. `ConversationTurnCard` adds a reading container; virtualized row transforms remain owned by `EventTimeline`, and row height changes continue to use its existing `measureElement`/ResizeObserver path. New disclosure animation changes opacity only, and send feedback changes only the local button transform. The old unconditional timeline entrance animation is disabled; a reduced-motion media query covers existing and new controls.
+
+`Sidebar` owns its narrow-screen drawer and Escape handling without changing provider lifetimes or `AppShell`. `ConfigPanel` owns a local disclosure state: cwd stays available in the compact summary, while all existing controls remain in the expanded panel. Narrow screens use a two-column configuration grid; no overflow container clips the upward-opening Select menus. Composer mode help, the explicit Tree placeholder, editable draft queue, mobile sidebar controls and configuration labels share the existing English/Chinese dictionaries.
+
+The existing response-preview regression check still verifies `min-w-0`, flexible width and ellipsis; it no longer requires italic typography. No new presentation-only unit tests are added. Validate with the existing Node tests, TypeScript, changed-file ESLint, and the isolated showcase in both themes and at narrow width. Keep `NEXT_DIST_DIR` build paths out of committed `tsconfig.json`.
+
+`TopBar` reserves mobile width for the sidebar toggle and critical refresh/Stop actions. Below the `sm` breakpoint, its rate-limit and context bars use `w-10`/`w-12`, and the plan badge is hidden; `sm` restores the original `w-16`/`w-20` bars and badge. The status label can truncate while its icon remains fixed. Include a 320px running state with rate limits, plan type and context usage in browser acceptance checks.

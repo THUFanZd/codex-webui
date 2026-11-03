@@ -18,7 +18,7 @@ export function ConversationTurnCard({ turn, onOpenDiff }: {
     !["error", "user_input_request", "function_call", "function_call_output"].includes(item.type));
   const urgent = turn.items.filter((item) => item.type === "error" || item.type === "user_input_request");
   const boundary = turn.boundary;
-  return <div className="space-y-2">
+  return <div className="conversation-turn space-y-3">
     {turn.prompt && <EventCard item={turn.prompt} timestamp={turn.timestamp} showHeader={false} onOpenDiff={onOpenDiff} />}
     {boundary?.status === "failed" && <TurnStatusCard entry={boundary} />}
     {(finalMessage || process.length > 0 || boundary?.status === "running") && <ResponseBlockCard

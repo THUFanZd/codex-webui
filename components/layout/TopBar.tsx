@@ -88,20 +88,20 @@ export function TopBar() {
   };
 
   return (
-    <header className="flex h-10 shrink-0 items-center justify-between gap-2 border-b border-[hsl(var(--overlay)/0.05)] bg-[hsl(var(--surface))] px-2 sm:px-4">
+    <header className="workspace-topbar flex shrink-0 items-center justify-between gap-2 border-b border-[hsl(var(--border-subtle))] bg-[hsl(var(--surface))] pl-14 pr-2 sm:pr-4 md:pl-4">
       {/* 左：会话标识 */}
       <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden lg:gap-3">
-        <div className="flex shrink-0 items-center gap-1.5">
+        <div className="flex min-w-0 items-center gap-1.5">
           {isRunningState ? (
-            <Loader2 className="h-3 w-3 animate-spin text-[hsl(var(--primary))]" />
+            <Loader2 className="h-3 w-3 shrink-0 animate-spin text-[hsl(var(--primary))]" />
           ) : state.status === "completed" ? (
-            <Circle className="h-2 w-2 fill-[hsl(var(--primary))] text-[hsl(var(--primary))]" />
+            <Circle className="h-2 w-2 shrink-0 fill-[hsl(var(--primary))] text-[hsl(var(--primary))]" />
           ) : state.status === "failed" ? (
-            <Circle className="h-2 w-2 fill-[hsl(var(--danger))] text-[hsl(var(--danger))]" />
+            <Circle className="h-2 w-2 shrink-0 fill-[hsl(var(--danger))] text-[hsl(var(--danger))]" />
           ) : (
-            <Circle className="h-2 w-2 fill-[hsl(var(--muted))] text-[hsl(var(--muted))]" />
+            <Circle className="h-2 w-2 shrink-0 fill-[hsl(var(--muted))] text-[hsl(var(--muted))]" />
           )}
-          <span className={`font-mono text-xs ${statusColor}`}>{statusLabel}</span>
+          <span className={`min-w-0 truncate text-xs font-medium ${statusColor}`}>{statusLabel}</span>
         </div>
 
         {prefs?.cwd && (
@@ -126,14 +126,14 @@ export function TopBar() {
         )}
 
         {state.isReplay && (
-          <span className="hidden rounded-md bg-[hsl(var(--accent)/0.15)] px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[hsl(var(--accent))] lg:inline">
+          <span className="hidden rounded-md bg-[hsl(var(--accent)/0.15)] px-1.5 py-0.5 text-[10px] text-[hsl(var(--accent))] lg:inline">
             replay
           </span>
         )}
       </div>
 
       {/* 右：codex 速率限制 + 上下文进度 + token 用量 + Stop */}
-      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2 lg:gap-3">
+      <div className="flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-2 lg:gap-3">
         {/* codex 速率限制用量（plan + used% + reset） */}
         {hasRateLimits && (
           <div
@@ -148,7 +148,7 @@ export function TopBar() {
             ].filter(Boolean).join("\n")}
           >
             {rl?.planType && (
-              <span className="rounded-md bg-[hsl(var(--info)/0.12)] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-[hsl(var(--info))]">
+              <span className="hidden rounded-md bg-[hsl(var(--info)/0.12)] px-1.5 py-0.5 text-[10px] text-[hsl(var(--info))] sm:inline">
                 {rl.planType}
               </span>
             )}
@@ -157,7 +157,7 @@ export function TopBar() {
                 <Zap className="h-2.5 w-2.5" />
                 {rlUsedPct.toFixed(0)}%
               </span>
-              <div className="h-1 w-16 overflow-hidden rounded-full bg-[hsl(var(--overlay)/0.1)]">
+              <div className="h-1 w-10 overflow-hidden sm:w-16 rounded-full bg-[hsl(var(--overlay)/0.1)]">
                 <div
                   className={`h-full rounded-full transition-all ${
                     rlUsedPct > 90
@@ -187,7 +187,7 @@ export function TopBar() {
         {/* 上下文窗口进度条 */}
         {contextWindow > 0 && (
           <div
-            className="group relative flex shrink-0 items-center gap-1.5"
+            className="group relative flex shrink-0 items-center gap-1.5 rounded-sm focus-ring"
             tabIndex={0}
             aria-describedby="context-usage-tooltip"
           >
@@ -195,7 +195,7 @@ export function TopBar() {
               <span className="font-mono text-[9px] text-[hsl(var(--muted-foreground))]">
                 ctx {ctxPct.toFixed(0)}%
               </span>
-              <div className="h-1 w-20 overflow-hidden rounded-full bg-[hsl(var(--overlay)/0.1)]">
+              <div className="h-1 w-12 overflow-hidden sm:w-20 rounded-full bg-[hsl(var(--overlay)/0.1)]">
                 <div
                   className={`h-full rounded-full transition-all ${
                     ctxPct > 80
