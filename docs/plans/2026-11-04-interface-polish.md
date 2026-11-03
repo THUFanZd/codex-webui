@@ -43,3 +43,13 @@ Files: new components/companion/*; lib/companion/*; tests/companion.test.cjs; do
 4. Run npm.cmd test, TypeScript noEmit, ESLint for changed code, and an isolated NEXT_DIST_DIR production build.
 5. Run a separate local preview without touching the user's existing server. Browser-test tree drafts, nested followup, fold/unfold, continuous range editor, theme switching, narrow viewport, reduced motion, companion drag/hide/restore/persistence and state transitions using synthetic showcase data.
 6. Inspect screenshots, fix visual defects, commit integration and report exact commits, worktree path, verification and preview instructions. Leave worktrees and assets intact; no file deletion and no push/deploy.
+## Completed verification
+
+- Visual implementation: 7e9c55f, followed by 7867d76 for mobile header actions. Companion implementation: 8634b72. Host integration: 15eae7c. Branch integration: e4e86c7.
+- Independent specification and code-quality reviews passed. Reviews caught and resolved multiple-request attention and narrow-screen Stop-button layout defects.
+- Final combined code passed 45 Node tests, TypeScript noEmit, changed-file ESLint, and an isolated production build in .tmp/next-polish-production. Generated TypeScript configuration additions were checked and restored.
+- Browser verification used the isolated /showcase: sibling drafts, serial sends, nested followups and disclosure, continuous-range auto-selection, full-turn grouping, folded subsequent messages, light/dark themes, mobile sidebar and configuration menus.
+- Companion verification covered real pointer dragging, keyboard movement, hide/restore and position persistence across reload, invalid sprite rejection and valid local v2 atlas import, historical idle, live running/completion, and attention clearing after successful response.
+- A temporary slow synthetic event stream made live states observable. The original fixture bytes were restored before final checks and production build. No real Codex task or desktop pet configuration was changed by these browser tests.
+- With full usage information, Stop stayed inside the viewport at both 320 px (right edge 312.6) and 390 px (right edge 382.7). Browser console had no errors. Both final theme screenshots were inspected.
+- Preview runs on a separate port 3041. The existing service and production .next directory were preserved; no files or worktrees were deleted and nothing was pushed.
