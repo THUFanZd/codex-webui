@@ -205,3 +205,5 @@ The discussion workspace uses blue-grey surfaces with a restrained periwinkle ac
 The composer keeps Normal, Tree and Fold modes together. In Tree mode, the input explicitly adds a question to the editable unsent queue; each queued question still has its own Send action. On narrow screens, the top-left sidebar button opens session navigation, and Escape closes it. The bottom bar always exposes the working directory; **Settings** expands the existing model, effort, collaboration mode, sandbox and approval controls. These settings use two columns on narrow screens so the conversation remains readable.
 
 Disclosure and send feedback use brief transitions. Keyboard focus remains visible, and the interface respects `prefers-reduced-motion`.
+
+On phones, the header uses compact usage bars and omits the plan badge to leave room for session status, refresh and Stop. Wider screens retain the full usage display.
