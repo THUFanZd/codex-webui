@@ -303,3 +303,15 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS · SWR · @tan
 ## License and project identity
 
 Project source is released under the [MIT License](./LICENSE). The `private: true` package flag intentionally prevents accidental npm publication and does not change the source license. Third-party dependencies retain their own licenses, and bundled third-party material is recorded in [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md). This is an independent community project; OpenAI and Codex names and marks belong to OpenAI and must not be used to imply affiliation or endorsement.
+
+## Companion / 网页桌宠
+
+`components/companion/WebCompanion.tsx` is a client overlay mounted once beneath the active-session and language providers. It uses a CSS module, original SVG artwork, pointer capture with drag-click suppression, keyboard placement, and a persistent hide/restore control. It subscribes only to existing React session state and a local user-input resolution event; it adds no API calls or polling.
+
+`lib/companion/state.ts` derives idle/running/attention and validates observed live completion transitions. Replay stays idle, current-turn questions are matched by interaction ID, warnings are ignored, and resumed model/tool output clears earlier attention. After a successful response, `UserInputRequestCard` dispatches `INTERACTION_RESOLVED_EVENT` with `{ interactionId: item.interactionId }` in a CustomEvent detail. This bridges submitted state without modifying the session reducer. Completion animation expires after 2.1 seconds.
+
+`lib/companion/preferences.ts` validates versioned localStorage preferences, tolerates unavailable storage, clamps the full 128 × 154 footprint (including narrow viewports), and validates v1/v2 atlas dimensions. The optional local importer decodes PNG/WebP object URLs, limits files to 20 MiB, revokes URLs on replacement/unmount, and keeps images out of persistence. `SpriteArt` renders the documented common state rows and stops motion when requested by the OS.
+
+Run `node --test tests/companion.test.cjs` for the pure state, storage, sprite-dimension, and placement regressions. See [docs/pet-research.md](./docs/pet-research.md) for verified desktop sources, local format references, evidence boundaries, and the integration event contract.
+
+网页桌宠独立管理样式、拖动、键盘位置、隐藏恢复与本地精灵图；状态直接来自现有会话 Context。已回答问题通过本地事件按 interactionId 清除等待状态；回放历史保持空闲，实时完成只庆祝一次。仅持久化位置与显示状态，不读取或修改桌面宠物配置，也不增加网络轮询。
