@@ -1,219 +1,106 @@
-# Codex Web UI
-
 <p align="center">
-  <img src="./logo/codex-color.svg" width="120" alt="Codex logo" />
+  <img src="./logo/codex-color.svg" width="52" alt="" />
 </p>
 
-A lightweight, local graphical interface for the [OpenAI Codex CLI](https://github.com/openai/codex). It brings Codex CLI conversations, session history, configuration, and file diffs into the browser while keeping Codex CLI as the underlying engine. Everything runs on `127.0.0.1` for a single local user.
+<h1 align="center">Codex Web UI</h1>
 
-This is an independent community project and is not affiliated with or endorsed by OpenAI. OpenAI and Codex names and marks belong to OpenAI.
+<p align="center">
+  <strong>A local workspace for long Codex conversations</strong><br />
+  Follow up in branches, fold finished work, and pick up where you left off.
+</p>
 
-[中文文档](./README.zh-CN.md) · [Development Guide](./DEVELOPMENT.md)
+<p align="center">
+  <a href="#quick-start">Quick start</a> &nbsp;·&nbsp;
+  <a href="#local-demo">Local demo</a> &nbsp;·&nbsp;
+  <a href="./DEVELOPMENT.md">Development</a> &nbsp;·&nbsp;
+  <a href="./README.zh-CN.md">简体中文</a>
+</p>
 
-Upstream project: [openai/codex](https://github.com/openai/codex)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/readme/workspace-dark.jpg" />
+  <img src="./docs/readme/workspace-light.jpg" alt="Codex Web UI with a folded work record, a question tree with nested follow-ups, and a companion beside the conversation" width="1280" />
+</picture>
 
-Current release: **v0.1.1**
+<p align="center"><sub>Captured from the local demo with fictional data. <a href="./docs/readme/workspace-dark.jpg">Dark</a> / <a href="./docs/readme/workspace-light.jpg">Light</a></sub></p>
 
----
+## One session, three views
 
-## Preview
+| Mode | What you can do |
+| :--- | :--- |
+| **Normal** | Follow prompts, replies, and execution events in order. |
+| **Tree** | Draft several sibling questions, send them one at a time, and nest a follow-up under the answer it refers to. |
+| **Folded** | Keep the prompt, execution, and final reply together in a compact record. Expand it or continue it when needed. |
 
-![Codex Web UI safe showcase](./docs/showcase.png)
-
-This image is captured from `/showcase`, where the production `AppShell` and its real UI components run against an isolated synthetic data layer. The fixture includes three temporary projects and three non-project conversations; it does not read local sessions, invoke Codex CLI, access the real filesystem, or send requests to backend API routes.
-
-## Why
-
-The Codex CLI is powerful, but working entirely in a terminal is not always the most convenient way to follow long tasks or revisit earlier sessions. This project provides a lightweight browser-based GUI on top of Codex CLI so you can:
-
-- Watch streaming conversations with rich rendering (Markdown, syntax-highlighted code, LaTeX, unified diffs)
-- Browse and replay any past session — including 7-day-old `.jsonl.zst` archives
-- Resume a finished session with a new prompt
-- Tune model / reasoning effort / sandbox / approval policy visually, per session
-- Navigate long sessions fast with virtualized scrolling and per-message navigation
-
-It runs entirely locally. No server to deploy, no auth, no remote access — the dev and production servers bind to `127.0.0.1` only.
-
-## Features
-
-| Area | What it does |
-|---|---|
-| **Streaming conversation** | Connects to `codex app-server` over JSON-RPC and maps notifications to SSE in real time — agent messages, reasoning, command execution, file changes, MCP tool calls, web search, plan updates, and turn boundaries. The conversation view enters its running state immediately and inserts the submitted prompt locally before app-server starts, so a slow startup neither replaces it with the welcome screen nor hides the new message. |
-| **Session replay** | Scans `~/.codex/sessions/` and `~/.codex/archived_sessions/` (including `.jsonl.zst` archives) and replays any past session through the same rendering pipeline as live streams. Unmatched historical turn-start records are finalized when replay ends, preventing stale running banners. |
-| **Resume** | Pick a historical session, type a new prompt — earlier turns remain visible while the next app-server turn starts and appends to the same timeline. Selecting a project or history item also synchronizes the working directory to that project. New live sessions are made resumable after their thread starts. |
-| **Isolated showcase** | Run the production interface at `/showcase` with fictional projects and conversations for safe screenshots, demos, visual QA, and onboarding. |
-| **Diff viewer** | `file_change` items open a full-screen unified-diff dialog with add/remove/context line coloring, double line numbers, syntax highlighting, and one-click patch copy. |
-| **Config panel** | Model, reasoning effort, collaboration mode (`Default` / `Plan`), sandbox, approval policy, and working directory — persisted per session in `localStorage`. |
-| **Usage indicators** | Context usage remains specific to the selected conversation. Account rate limits in the top bar are global, persist across session switches and page reloads, and are updated only by live execution rather than historical replay snapshots. If no browser cache exists, the app restores the most recently recorded account snapshot across sessions. |
-| **Composer** | A low-profile input surface keeps the prompt, session indicator, and keyboard hints together with a precise 6px vertical frame. |
-| **Message bubbles** | User prompts use compact 8px vertical padding and a tight single-paragraph rhythm without changing multiline Markdown layout. |
-| **Interactive questions** | In Plan mode, structured `request_user_input` questions render as option/text cards; submitting an answer resumes the same turn through `/api/exec/respond`. |
-| **User attachments** | Image inputs appear as compact thumbnails above the message bubble with full-screen preview. The preview supports continuous mouse-wheel zoom; panning activates only when the zoomed image exceeds the viewport and stops at the image edges within a 16px visual buffer, while fit and zoom controls remain available. Other files use a compact filename/path card. Codex-injected file and browser metadata is hidden from the visible message. |
-| **Slash commands** | 15 codex CLI commands (`/approvals`, `/architect`, `/clear`, `/compact`, `/diff`, `/goal`, `/help`, `/init`, `/mode`, `/model`, `/plan`, `/review`, `/sandbox`, `/skills`, `/status`) with an autocomplete menu triggered by `/`. |
-| **Skills `@` completion** | Scan `~/.codex/skills/` and enabled plugins, insert skill references via `@`. |
-| **Conversation navigation** | A vertical dot rail on the left maps to each user message; hover for a preview tooltip, click to jump. The active dot auto-highlights as you scroll. |
-| **Collapsible thinking process** | Continuous intermediate events (reasoning / command / file / search / mcp / plan) merge into a single collapsible block with a summary preview and action count. Collapsed summaries truncate within the gray header rather than overflowing it. |
-| **Code highlighting** | Token colors match VSCode Dark+ / Light+ themes, verified for keywords, functions, strings, numbers, built-ins, and parameters. |
-| **Response images** | Markdown images use bounded, theme-aware rendering. Local images under `~/.codex/visualizations/` are served through a guarded read-only endpoint; blocked or missing images show a compact fallback instead of a broken element. |
-| **Virtual scrolling** | `@tanstack/react-virtual` with dynamic measurement keeps long sessions (hundreds of events) smooth. |
-| **Abort** | Stop button (or closing the tab) aborts the fetch, kills the codex child process, and leaves the partial rollout on disk for resume. |
-| **Light / dark theme** | Follows the system by default, with a persistent manual light/dark/system toggle. |
-| **Interface language** | Follows the system by default, with Simplified Chinese and English overrides. The compact language menu applies immediately, persists in `localStorage`, and updates the document language. |
-
-## Organize a conversation
-
-- Choose **Normal**, **Tree**, or **Folded** above the input. The mode applies to upcoming turns until you switch back to Normal.
-- In Tree mode, type a question and press Enter or **Record question**. Record several questions first, edit drafts as needed, then use **Send question** one at a time. Use **Add sibling questions** under an answer or region, or **Follow up here** on a branch to nest a follow-up.
-- Folded mode collects full prompts, execution events and final replies into one collapsed record. Expand its header to read it; **Continue this record** appends more turns.
-- Click **Organize messages** above the timeline to select a start and end turn. All complete turns in between are included. Give the region an optional title and arrange it as a tree or fold it. **Restore normal display** reverses the organization without removing messages.
-- Layout, collapse state and unsent questions are saved per session in this browser. They do not sync between browsers. Switching display modes does not fork the underlying Codex conversation; branch follow-ups include a compact reference to the intended answer.
-
-## CLI compatibility
-
-Current CLI structured completion events preserve command output, exit codes, and file changes during replay, while older command logs remain supported. Added/deleted file content is converted to unified diffs with accurate change types and line counts. History lists read recent sessions on demand and cache unchanged metadata/previews; compressed preview reads close their input streams before decoding the rest of the archive.
-
-## Prerequisites
-
-- **Node.js 18.18+** (Next.js 15 requirement)
-- **Codex CLI** installed and authenticated:
-
-  ```bash
-  npm install -g @openai/codex
-  codex login          # ChatGPT sign-in (recommended)
-  # — or —
-  $env:CODEX_API_KEY = "sk-..."   # API key (exec-only)
-  ```
-
-  Verify: `codex --version` prints a version.
+The views share one Codex session. The browser remembers each session’s groups, collapsed state, and unsent drafts.
 
 ## Quick start
 
+Use **Node.js 18.18+** and an authenticated [Codex CLI](https://github.com/openai/codex). If you need to set up the CLI, run these commands.
+
 ```bash
-git clone https://github.com/LuSeptem/codex-webui.git
-cd codex-webui
-npm install
-npm run dev
-# open http://127.0.0.1:3000
+npm install -g @openai/codex
+codex login
 ```
 
-Production:
+In a checkout of this version, install the locked dependencies and start the app.
+
+```bash
+npm ci
+npm run dev
+```
+
+Open [http://127.0.0.1:3000](http://127.0.0.1:3000), choose a working directory, and send a prompt. On Windows PowerShell, use `npm.cmd` if the shell blocks `npm.ps1`.
+
+<details>
+<summary>Production and alternate ports</summary>
 
 ```bash
 npm run build
-npm start              # serves on 127.0.0.1:3000
+npm start
 ```
 
-Both `dev` and `start` bind to `127.0.0.1` only — there is no remote access.
+The default port is 3000. If it is occupied, use `npm run dev -- --port 3001` or `npm start -- --port 3001` and open the matching local URL.
 
-## Isolated showcase tool
+</details>
 
-`/showcase` is a standalone tool for presenting and testing the production interface without exposing your real projects or conversations. Start the app normally, then open [http://127.0.0.1:3000/showcase](http://127.0.0.1:3000/showcase).
+## Organize a conversation
 
-It mounts the same production `AppShell` and UI components as the main application, backed by three fictional projects and three fictional non-project conversations. Use it for README screenshots, product demos, visual QA, and onboarding.
+1. Pick **Normal**, **Tree**, or **Folded** above the composer to set the display mode for upcoming turns.
+2. In **Tree**, press Enter to record a question, then edit and send drafts individually. Use **Add sibling questions** or **Follow up here** to set where the next question appears.
+3. In **Folded**, click a record’s title to open it or choose **Continue this record** to append a turn.
+4. To reorganize existing turns, click **Organize messages** and select the first and last turn. The editor includes the complete range. Give the group an optional title and choose tree or folded display. **Restore normal display** ungroups the turns and preserves the messages.
 
-The showcase has its own cache and preferences, and every application API request is answered by in-memory fixtures. Unknown API routes and external requests are rejected. It does not read `CODEX_HOME`, local sessions, the real filesystem, or invoke Codex CLI; prompts entered in the composer receive synthetic responses only.
+### Follow the work
 
-## Local API security
+- **Live activity** streams answers, commands, file changes, tool calls, and plans. Expand a process summary to inspect the steps or open a file change to view and copy its diff.
+- **History** lets you browse, replay, and resume Codex sessions, including compressed `.jsonl.zst` archives. Use the message rail to jump to a turn.
+- **Controls** include model, reasoning effort, collaboration mode, sandbox, approval policy, and working directory. Type `/` for commands or `@` for skills. In **Plan** mode, answer structured questions in the timeline.
+- **Reading** supports Markdown, syntax highlighting, LaTeX, and image previews. The interface offers light, dark, and system themes plus English and Simplified Chinese. On narrow screens, open the sidebar from the top-left button and expand **Settings** below the composer.
 
-The application is intentionally local-only and has no user authentication. Every `/api/*` request passes through a local request boundary that requires a loopback URL and `Host`, rejects cross-origin and cross-site browser requests, and accepts write bodies only as `application/json`. These checks protect the local Codex execution bridge from cross-site request forgery while preserving normal browser and command-line access from the same machine.
+### Bring the companion along
 
-Do not expose the server to a LAN or the public internet. The loopback and same-origin checks are defense in depth for the supported single-user local deployment, not a replacement for authentication in a remotely accessible service.
+The companion animates while a turn runs, shows when the task needs attention, and briefly celebrates completion. Drag it to move it or use arrow keys when focused. Hide it with its close button and restore it with **Show companion**. The browser remembers its position and visibility and respects reduced motion.
 
-## How it works
+Import a local PNG or WebP sprite sheet for the current page visit. The accepted sizes are **1536 × 1872 (v1)** and **1536 × 2288 (v2)**, up to **20 MiB**. [Sprite format and controls](./docs/pet-research.md)
 
-```
-Browser ──POST /api/exec──▶ Next.js Route Handler
-                              │
-                              ├─ spawn codex app-server (stdio JSON-RPC)
-                              ├─ thread/start or thread/resume + turn/start
-                              ├─ notifications ──▶ SSE ──▶ useReducer timeline
-                              └─ requestUserInput ◀── POST /api/exec/respond
+## Local demo
 
-Browser ──GET /api/sessions/:id/events──▶ replay.ts
-                                              │
-                                              ├─ read rollout .jsonl[.zst]
-                                              ├─ map items → item.completed events
-                                              └─ SSE ──▶ same reducer as live
-```
+Once the app is running, open [http://127.0.0.1:3000/showcase](http://127.0.0.1:3000/showcase). The demo uses the same interface with fictional projects, session history, and simulated replies supplied in the browser. You can try the three views and the companion using the demo data alone.
 
-The backend never stores sessions itself — it reads codex's own rollout files directly, so there is exactly one source of truth. Live streams and replays feed the same reducer, so the rendering is identical.
+## Configuration and help
 
-### Binary resolution
+The web server binds to `127.0.0.1` for local, single-user use. The browser talks to the local Next.js server, which runs `codex app-server` for live turns and reads Codex rollout files for replay.
 
-The app resolves the codex binary in this order:
+| Variable in `.env.local` | When to set it |
+| :--- | :--- |
+| `CODEX_BIN` | Point to the absolute path of the real Codex executable if detection fails. |
+| `CODEX_JS` | Point to the absolute path of `@openai/codex/bin/codex.js` to use the Node launcher. |
+| `CODEX_HOME` | Use a different Codex data directory. The default is `~/.codex`. |
 
-1. `CODEX_BIN` env var (absolute path to the executable)
-2. `CODEX_JS` env var (absolute path to `@openai/codex/bin/codex.js`)
-3. npm global `@openai/codex/bin/codex.js` launched via `node` (platform-independent, avoids Windows `.cmd` shim / `shell:true` injection risks)
-4. `codex` resolved from `PATH` (fallback)
+If the app cannot find Codex, run `codex --version` in the same shell used to start it, or set `CODEX_BIN`. For binary resolution, session data flow, API boundaries, and contributor commands, see the [development guide](./DEVELOPMENT.md).
 
-On Windows, discovery is shell-free: known npm global directories are checked without
-launching `npm.cmd`, and the `PATH` fallback uses `where.exe` with `shell:false` and
-accepts only directly executable paths. `.cmd`, `.bat`, and `.ps1` shims are not invoked.
-This avoids creating an extra `cmd.exe` process when a message starts. Security software
-may still prompt because the web server legitimately starts Codex; if that happens, use a
-narrow trusted-app rule for this local app/Node/Codex installation instead of disabling
-protection globally.
+---
 
-## Configuration
+**v0.1.1** · [MIT License](./LICENSE) · [Third-party notices](./THIRD_PARTY_NOTICES.md)
 
-### Environment variables (`.env.local`)
-
-| Variable | Default | Purpose |
-|---|---|---|
-| `CODEX_BIN` | — | Absolute path to the codex executable. On Windows, prefer the real binary (not the `.cmd` shim). |
-| `CODEX_JS` | — | Absolute path to `@openai/codex/bin/codex.js` (the Node launcher). Useful when native binary resolution fails. |
-| `CODEX_HOME` | `~/.codex` | Override the codex home directory (where `sessions/`, `archived_sessions/`, `auth.json`, and `skills/` live). |
-
-### In-app preferences
-
-Model, reasoning effort, collaboration mode, sandbox, approval policy, and the working directory are saved per session to `localStorage` under `codex-webui-prefs-v3` and shared across all UI panels via SWR. The interface language is stored independently under `codex-webui-language` as `system`, `zh-CN`, or `en`.
-
-## Known limitations
-
-- **Structured questions require Plan mode.** Codex exposes `request_user_input` in Plan mode; Default mode executes tasks directly. Permission approvals are routed to Codex's automatic reviewer rather than rendered as user cards.
-- **Windows `.cmd` shim.** If codex is installed via npm on Windows, the app prefers launching `codex.js` through `node` to avoid `.cmd` shim / `shell:true` security issues. If that fails, set `CODEX_BIN` to the real executable.
-- **Single user.** No authentication, no multi-tenant isolation. Bind is `127.0.0.1` only.
-- **Rollout read-only.** The UI never writes to `~/.codex/sessions/`; codex is the sole writer. Archived `.jsonl.zst` files (>7 days) are decompressed on the fly with `fzstd`.
-
-## Troubleshooting
-
-**`codex executable not found`** — Set `CODEX_BIN` to the absolute path of the codex binary, or ensure `codex` is on `PATH` and `codex --version` works in the same shell you use to start the dev server.
-
-**`Model metadata for 'gpt-5-codex' not found`** — This is a codex CLI warning (shown as an error card in the timeline), not a Web UI issue. Run `codex` in a terminal directly to confirm; switch models in the config panel if needed.
-
-**Hydration warnings in console** — `data-trae-ref` attributes injected by browser automation tooling can cause SSR/client attribute mismatch warnings. These are dev-only artifacts and do not affect production.
-
-**Port 3000 in use** — Another process (often a stale dev server) holds the port. Kill it or run on a different port: `npx next dev -H 127.0.0.1 -p 3001`.
-
-## Tech stack
-
-Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS · SWR · @tanstack/react-virtual · react-markdown · rehype-highlight · KaTeX · fzstd · lucide-react · next-themes
-
-## Development
-
-See [DEVELOPMENT.md](./DEVELOPMENT.md) for the project architecture, directory layout, conventions, and guides for extending the app (adding event types, slash commands, etc.).
-
-## License
-
-Released under the [MIT License](./LICENSE). See [Third-Party Notices](./THIRD_PARTY_NOTICES.md) for bundled third-party material. OpenAI and Codex names and marks are not licensed under the project license.
-
-## Companion
-
-The small companion follows the active task: it rests while idle, works during a live run, waits for a current unresolved question or error, and briefly celebrates completion. Opening historical chats does not replay completion gestures.
-
-Drag it to move, or focus it and use the arrow keys (Shift moves farther). Home, Escape, or the home button restores its default position. The close button hides it; **Show companion** brings it back. Position and visibility are remembered locally and kept inside the viewport when the window changes size. Reduced motion is respected.
-
-The image button imports a local PNG/WebP sprite sheet: 1536 × 1872 (v1) or 1536 × 2288 (v2), up to 20 MiB. The file stays in your browser for this visit and is never uploaded. Click the paw button to return to the original artwork. This is an independent web companion; desktop pet settings are unchanged. See [pet research and format details](./docs/pet-research.md).
-
-The companion is available in both the main interface and the isolated `/showcase` demo.
-
-## Workspace appearance / 工作区外观
-
-The discussion workspace uses blue-grey surfaces with a restrained periwinkle accent in light and dark themes. Chinese body text uses the system sans-serif stack, with comfortable line spacing and a bounded reading width. Tree questions use connected branch markers and clearer question/answer spacing; folded records collapse into a compact header with a direct continue action.
-
-The composer keeps Normal, Tree and Fold modes together. In Tree mode, the input explicitly adds a question to the editable unsent queue; each queued question still has its own Send action. On narrow screens, the top-left sidebar button opens session navigation, and Escape closes it. The bottom bar always exposes the working directory; **Settings** expands the existing model, effort, collaboration mode, sandbox and approval controls. These settings use two columns on narrow screens so the conversation remains readable.
-
-Disclosure and send feedback use brief transitions. Keyboard focus remains visible, and the interface respects `prefers-reduced-motion`.
-
-On phones, the header uses compact usage bars and omits the plan badge to leave room for session status, refresh and Stop. Wider screens retain the full usage display.
+Independent community project. OpenAI and Codex names and marks belong to OpenAI.
