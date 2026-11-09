@@ -37,7 +37,7 @@ Useful scripts:
 
 Isolation happens at the data boundary. `ShowcaseEnvironment` installs an in-page fetch adapter before mounting `AppShell`, gives SWR a private cache, nests a fresh `ActiveSessionProvider`, and stores configuration under `codex-webui-showcase-prefs-v3`. Every `/api/*` call made by production hooks is answered from `lib/showcase/fixtures.ts`; unknown API routes and external requests are rejected. The fixture contains three synthetic projects and three standalone conversations, plus virtual config, skills, filesystem, usage, replay streams, and exec responses. It never reads `CODEX_HOME`, local sessions, the real filesystem, or Codex CLI.
 
-Keep all fixture content fictional and never copy local session text or paths into `lib/showcase/fixtures.ts`. Browser QA must assert that no `/api/*` network request leaves the page. The READMEs share dark and light screenshots in `docs/readme/`. Capture both themes at the same viewport and show a folded record, a question tree, and the companion with fictional data.
+Keep all fixture content fictional and never copy local session text or paths into `lib/showcase/fixtures.ts`. Browser QA must assert that no `/api/*` network request leaves the page. The READMEs share focused screenshots in `docs/readme/`. Capture the same record collapsed and expanded, a question tree with siblings and a nested follow-up, and the companion with its hide and restore controls. Use fictional showcase data for every capture.
 
 ## Architecture overview
 

@@ -10,28 +10,42 @@
 </p>
 
 <p align="center">
+  <a href="#folded-records">Folded records</a> &nbsp;·&nbsp; <a href="#question-tree">Question tree</a> &nbsp;·&nbsp; <a href="#web-companion">Web companion</a><br />
   <a href="#quick-start">Quick start</a> &nbsp;·&nbsp;
   <a href="#local-demo">Local demo</a> &nbsp;·&nbsp;
   <a href="./DEVELOPMENT.md">Development</a> &nbsp;·&nbsp;
   <a href="./README.zh-CN.md">简体中文</a>
 </p>
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./docs/readme/workspace-dark.jpg" />
-  <img src="./docs/readme/workspace-light.jpg" alt="Codex Web UI with a folded work record, a question tree with nested follow-ups, and a companion beside the conversation" width="1280" />
-</picture>
+## Folded records
 
-<p align="center"><sub>Captured from the local demo with fictional data. <a href="./docs/readme/workspace-dark.jpg">Dark</a> / <a href="./docs/readme/workspace-light.jpg">Light</a></sub></p>
+Keep a prompt, its execution, and the final reply in one record. Click the title to expand it.
 
-## One session, three views
+**Collapsed**
 
-| Mode | What you can do |
-| :--- | :--- |
-| **Normal** | Follow prompts, replies, and execution events in order. |
-| **Tree** | Draft several sibling questions, send them one at a time, and nest a follow-up under the answer it refers to. |
-| **Folded** | Keep the prompt, execution, and final reply together in a compact record. Expand it or continue it when needed. |
+![A completed turn reduced to one record row](./docs/readme/folded-record.jpg)
 
-The views share one Codex session. The browser remembers each session’s groups, collapsed state, and unsent drafts.
+**Expanded excerpt**
+
+![The same record expanded with the prompt, command and file-change counts, and the final reply](./docs/readme/fold-expanded.jpg)
+
+## Question tree
+
+Record sibling questions, send them individually, and follow up under a specific answer. In this example, the release-version question is nested under the metrics question. The empty-state question is a sibling.
+
+![Two sibling questions and an indented follow-up under the first answer](./docs/readme/question-tree.jpg)
+
+Display modes share the same Codex session. The browser saves groups, collapsed states, and drafts per session.
+
+## Web companion
+
+Drag the companion to a free spot in the workspace. Its status follows the current task, and **Show companion** brings it back after hiding.
+
+| Visible | Hidden |
+| :---: | :---: |
+| ![Companion in its new position with status and controls](./docs/readme/web-companion.jpg) | ![Show companion button after hiding the companion](./docs/readme/companion-restore.jpg) |
+
+<sub>All images come from the local demo with fictional data.</sub>
 
 ## Quick start
 
@@ -77,9 +91,9 @@ The default port is 3000. If it is occupied, use `npm run dev -- --port 3001` or
 - **Controls** include model, reasoning effort, collaboration mode, sandbox, approval policy, and working directory. Type `/` for commands or `@` for skills. In **Plan** mode, answer structured questions in the timeline.
 - **Reading** supports Markdown, syntax highlighting, LaTeX, and image previews. The interface offers light, dark, and system themes plus English and Simplified Chinese. On narrow screens, open the sidebar from the top-left button and expand **Settings** below the composer.
 
-### Bring the companion along
+### Companion settings
 
-The companion animates while a turn runs, shows when the task needs attention, and briefly celebrates completion. Drag it to move it or use arrow keys when focused. Hide it with its close button and restore it with **Show companion**. The browser remembers its position and visibility and respects reduced motion.
+The companion animates while a turn runs and briefly celebrates completion. Use the arrow keys when it is focused. The browser remembers its position and visibility and respects reduced motion.
 
 Import a local PNG or WebP sprite sheet for the current page visit. The accepted sizes are **1536 × 1872 (v1)** and **1536 × 2288 (v2)**, up to **20 MiB**. [Sprite format and controls](./docs/pet-research.md)
 
